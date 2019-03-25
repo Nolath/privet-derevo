@@ -1,11 +1,7 @@
 function dummySegmentTree(array, fn, N) {
   return function (from, to) {
     let result = N;
-
-    for (let i = from; i < to; i++) {
-      result = fn(result, array[i]);
-    }
-
+    for (let i = from; i < to; i++) result = fn(result, array[i]);
     return result;
   }
 }
@@ -47,7 +43,7 @@ function segmentTree(array, fn, N) {
 function recursiveSegmentTree(array, fn, N) {
   if (Array.isArray(array[0])) {
     let newArray = array.map(x => recursiveSegmentTree(x, fn, N));
-    return segmentTree(newArray, treeCombiner(fn), 0);
+    return segmentTree(newArray, treeCombiner(fn), () => {return 0});
   }
   else return segmentTree(array, fn, N)
 }
