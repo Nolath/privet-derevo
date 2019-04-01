@@ -1,9 +1,5 @@
-function dummySegmentTree(array, fn, N) {
-  return function (from, to) {
-    let result = N;
-    for (let i = from; i < to; i++) result = fn(result, array[i]);
-    return result;
-  }
+function emptyTree() {
+  return 0;
 }
 
 function treeBuild(array, fn) {
@@ -41,9 +37,22 @@ function segmentTree(array, fn, N) {
 }
 
 function recursiveSegmentTree(array, fn, N) {
-  if (Array.isArray(array[0])) {
-    let newArray = array.map(x => recursiveSegmentTree(x, fn, N));
-    return segmentTree(newArray, treeCombiner(fn), () => {return 0});
+  if (Array.isArray(array[0][0])) {
+    array = array.map(function(subarray) {
+      return subarray.map(function(subarray) {
+        return segmentTree(subarray, fn, 0);
+      });
+    });
+    array = array.map(function(subarray) {
+      return segmentTree(subarray, treeCombiner(fn), emptyTree);
+    });
+    return segmentTree(array, treeCombiner((t1, t2) => {return treeCombiner(fn)(t1, t2)}), () => emptyTree);
+  }
+  else if (Array.isArray(array[0])) {
+    array = array.map(function(subarray) {
+      return segmentTree(subarray, fn, 0);
+    });
+    return segmentTree(array, treeCombiner(fn), emptyTree);
   }
   else return segmentTree(array, fn, N)
 }
@@ -56,12 +65,25 @@ function treeCombiner(fn) {
   }
 }
 
+function collectTrees(fn) {
+  return function(thisTree, thatTree) {
+    return function(from, to) {
+      return fn(thisTree(from, to), thatTree(from, to));
+    }
+  }
+};
+
 function getElfTree(array) {
   return recursiveSegmentTree(array, sum, 0);
 }
 
 function assignEqually(tree, wishes, stash, elves, gems, week) {
-  return {};
+  let gemsCount = [];
+  for (let i = 0; i < elves.length; i++) {
+    gemsCount.push(tree(i, i + 1)(0, gems.length - 1)(0, week));
+  }
+
+  return gemsCount;
 }
 
 function assignAtLeastOne(tree, wishes, stash, elves, gems, week) {
