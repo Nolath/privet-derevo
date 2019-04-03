@@ -82,7 +82,7 @@ function assignEqually(tree, wishes, stash, elves, gems, week) {
     let temp = tree(i, i + 1)(0, gems.length)(0, week);
     gemsCount.push(temp);
   }
-  for (gem in stash){
+  for (gem in stash) {
     for (let i = 0; i < stash[gem]; i++) {
       let min = minOfArray(gemsCount);
       let minIndex = gemsCount.indexOf(min);
@@ -102,7 +102,7 @@ function assignAtLeastOne(tree, wishes, stash, elves, gems, week) {
     let temp = tree(i, i + 1)(0, gems.length)(week, week);
     gemsCount.push(temp);
   }
-  for (gem in stash){
+  for (gem in stash) {
     for (let i = 0; i < stash[gem]; i++) {
       let min = minOfArray(gemsCount);
       let minIndex = gemsCount.indexOf(min);
