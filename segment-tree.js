@@ -65,14 +65,6 @@ function treeCombiner(fn) {
   }
 }
 
-function collectTrees(fn) {
-  return function(thisTree, thatTree) {
-    return function(from, to) {
-      return fn(thisTree(from, to), thatTree(from, to));
-    }
-  }
-};
-
 function getElfTree(array) {
   return recursiveSegmentTree(array, sum, 0);
 }
