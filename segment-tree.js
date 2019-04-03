@@ -69,18 +69,73 @@ function getElfTree(array) {
   return recursiveSegmentTree(array, sum, 0);
 }
 
+function minOfArray(array) {
+  let min = +Infinity;
+  for (let i = 0; i < array.length; i++) if (array[i] < min) min = array[i];
+  return min;
+}
+
 function assignEqually(tree, wishes, stash, elves, gems, week) {
-  return {};
+  let result = {};
+  let gemsCount = [];
+  for (let i = 0; i < elves.length; i++) {
+    let temp = tree(i, i + 1)(0, gems.length)(0, week);
+    gemsCount.push(temp);
+  }
+  for (gem in stash){
+    for (let i = 0; i < stash[gem]; i++) {
+      let min = minOfArray(gemsCount);
+      let minIndex = gemsCount.indexOf(min);
+      gemsCount[minIndex]++;
+      if (result[elves[minIndex]] == undefined) result[elves[minIndex]] = {};
+      if (result[elves[minIndex]][gem] == undefined) result[elves[minIndex]][gem] = 0;
+      result[elves[minIndex]][gem]++;
+    }
+  }
+  return result;
 }
 
 function assignAtLeastOne(tree, wishes, stash, elves, gems, week) {
-  return {};
+  let result = {};
+  let gemsCount = [];
+  for (let i = 0; i < elves.length; i++) {
+    let temp = tree(i, i + 1)(0, gems.length)(week, week);
+    gemsCount.push(temp);
+  }
+  for (gem in stash){
+    for (let i = 0; i < stash[gem]; i++) {
+      let min = minOfArray(gemsCount);
+      let minIndex = gemsCount.indexOf(min);
+      gemsCount[minIndex]++;
+      if (result[elves[minIndex]] == undefined) result[elves[minIndex]] = {};
+      if (result[elves[minIndex]][gem] == undefined) result[elves[minIndex]][gem] = 0;
+      result[elves[minIndex]][gem]++;
+    }
+  }
+  return result;
 }
 
 function assignPreferredGems(tree, wishes, stash, elves, gems) {
-  return {};
+  let result = {};
+  let elvesWishes = [];
+  for (gem in stash) {
+    elvesWishes = elves.map(elf => wishes[elves.indexOf(elf)][gems.indexOf(gem)])
+    elvesWishes = elvesWishes.map(x => 1 - x);
+    let min = minOfArray(elvesWishes);
+    let minIndex = elvesWishes.indexOf(min);
+    if (result[elves[minIndex]] == undefined) result[elves[minIndex]] = {};
+    if (result[elves[minIndex]][gem] == undefined) result[elves[minIndex]][gem] = 0;
+    result[elves[minIndex]][gem] += stash[gem];
+  }
+  return result;
 }
 
 function nextState(state, assignment, elves, gems) {
+  for (let e = 0; e < state.length; e++) {
+    for (let g = 0; g < state[e].length; g++) {
+      if (elves[e] in assignment && gems[g] in assignment[elves[e]]) state[e][g].push(assignment[elves[e]][gems[g]]);
+      else state[e][g].push(0);
+    }
+  }
   return state;
 }
